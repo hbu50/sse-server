@@ -1,8 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'sinatra'
-gem 'thin'
-gem 'shotgun'
-gem 'redis'
-gem 'celluloid'
-gem 'dotenv'
+# Specify your gem's dependencies in sse-server.gemspec
+gemspec
