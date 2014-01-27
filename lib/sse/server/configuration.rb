@@ -13,9 +13,13 @@ module Sse
       attr_accessor \
         :logger,
         :connection_manager,
-        :namespace
+        :namespace,
+        :authorize_lambda
 
       def initialize
+        @authorize_lambda=lambda{|request, channel|
+          return true
+        }
       end
     end
   end

@@ -9,12 +9,13 @@ module Sse
 
       end
       get '/c/*' ,provides: 'text/event-stream' do
-        Sse::Server.configuration.logger.error("New event-stream Request. Channel: #{params[:splat].first}")
+        nnel=params[:splat].first
+        Sse::Server.configuration.logger.error("New event-stream Request. Channel: #{nnel}")
 
-        # @authorize_block(request,channel)
+        autorized=Sse::Server.configuration.authorize_lambda.call(request,nnel)
 
-
-        channel=Sse::Server.configuration.namespace+":"+params[:splat].first
+        
+        channel=Sse::Server.configuration.namespace+":"+nnel
         last_event_id=request.env['HTTP_LAST_EVENT_ID']
 
         Sse::Server.configuration.logger.debug "LAST-EVENT-ID IS #{last_event_id}, Channel is #{channel}"
@@ -40,7 +41,7 @@ module Sse
           
           Sse::Server.configuration.connection_manager.subscribe(connection,channel)
           connection.callback {
-            Sse::Server.configuration.logger.error("event-stream client disconnected. Channel: #{params[:splat].first}")
+            Sse::Server.configuration.logger.error("event-stream client disconnected. Channel: #{nnel}")
             Sse::Server.configuration.connection_manager.unsubscribe(connection,channel)
           }
         end
