@@ -12,7 +12,10 @@ module Sse
         nnel=params[:splat].first
         Sse::Server.configuration.logger.error("New event-stream Request. Channel: #{nnel}")
 
-        autorized=Sse::Server.configuration.authorize_lambda.call(request,nnel)
+        authorized=Sse::Server.configuration.authorize_lambda.call(request,nnel)
+        if authorized==false
+          halt 401, 'unauthorized :-x'
+        end
 
         
         channel=Sse::Server.configuration.namespace+":"+nnel
