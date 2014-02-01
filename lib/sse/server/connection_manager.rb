@@ -16,7 +16,7 @@ module Sse
         if @channels[channel].nil?
           @channels[channel]={redis: nil, clients: []}
           @channels[channel][:redis]=RedisChannel.new(channel,self)
-          @channels[channel][:redis].async.start
+          @channels[channel][:redis].start
         end
         @channels[channel][:clients] << connection
         @logger.info("Subscribtion To Channel #{channel}. Total(#{@channels[channel][:clients].count})")
@@ -28,7 +28,8 @@ module Sse
 
           if @channels[channel][:clients].count==0
             #stop and remove this RedisChannel
-            @channels[channel][:redis].terminate
+            @channels[channel][:redis].kill
+            # @channels[channel][:redis].terminate
             @logger.info("Unsubscribtion from Channel #{channel}. Total(#{@channels[channel][:clients].count})")
           end
         end

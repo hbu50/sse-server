@@ -23,6 +23,8 @@ module Sse
 
         Sse::Server.configuration.logger.debug "LAST-EVENT-ID IS #{last_event_id}, Channel is #{channel}"
 
+        headers 'Access-Control-Allow-Origin'=> '*'
+
         stream(:keep_open) do |connection|
           if last_event_id
             #check redis

@@ -1,4 +1,3 @@
-require 'celluloid'
 require 'redis'
 require 'json'
 
@@ -27,49 +26,56 @@ module Sse
     end
 
     class RedisChannel
-      include Celluloid
+      # include Celluloid
 
       attr_accessor \
         :channel,
-        :manager
+        :manager,
+        :thread
       
       def initialize(channel,manager)
         @channel=channel
         @manager=manager
+        @thread=nil
       end
 
       def start
-        @redis=Redis.connect
-        @manager.logger.warn("New RedisChannel Started Listening On #{@channel}.")
-        begin
-          @redis.subscribe(@channel) do |on|
-            on.subscribe do |channel, subscriptions|
-            end
+        @thread=Thread.new{
+          @redis=Redis.connect
+          @manager.logger.warn("New RedisChannel Started Listening On #{@channel}.")
+          begin
+            @redis.subscribe(@channel) do |on|
+              on.subscribe do |channel, subscriptions|
+              end
 
-            on.message do |channel, message|
-              @manager.logger.debug("RedisChannel(#{channel}) Recived Message(#{message})")
-              Sse::Server.ignore_exception {
-                connections=@manager.connection_of_channel(@channel)
-                @manager.logger.info("Send Message to #{connections.count} subscriber.")
-                connections.each do |connection|
-                  connection << Sse::Server.message_to_sse(message)
-                end
-              }
-            end
+              on.message do |channel, message|
+                @manager.logger.debug("RedisChannel(#{channel}) Recived Message(#{message})")
+                Sse::Server.ignore_exception {
+                  connections=@manager.connection_of_channel(@channel)
+                  @manager.logger.info("Send Message to #{connections.count} subscriber.")
+                  connections.each do |connection|
+                    connection << Sse::Server.message_to_sse(message)
+                  end
+                }
+              end
 
-            on.unsubscribe do |channel, subscriptions|
+              on.unsubscribe do |channel, subscriptions|
+              end
             end
+          rescue Redis::BaseConnectionError => error
+            @manager.logger.error("RedisChannel Error On Redis Connection. Channel: #{@channel}")
+            sleep 1
+            retry
+          rescue JSON::ParserError => error
+            # how to say just ignore and continue
+            @manager.logger.error("Error Parsing JSON.")
           end
-        rescue Redis::BaseConnectionError => error
-          @manager.logger.error("RedisChannel Error On Redis Connection. Channel: #{@channel}")
-          sleep 1
-          retry
-        rescue JSON::ParserError => error
-          # how to say just ignore and continue
-          @manager.logger.error("Error Parsing JSON.")
-        end
+        }
       end
       
+      def kill
+        @thread.kill if @thread
+      end
     end
   end
 end
