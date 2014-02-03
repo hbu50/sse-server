@@ -41,11 +41,12 @@ module Sse
 
       def start
         @thread=Thread.new{
-          @redis=Redis.connect
+          @redis=Redis.new
           @manager.logger.warn("New RedisChannel Started Listening On #{@channel}.")
           begin
             @redis.subscribe(@channel) do |on|
               on.subscribe do |channel, subscriptions|
+                @manager.logger.warn("Redis Subscribed #{@channel}")
               end
 
               on.message do |channel, message|
