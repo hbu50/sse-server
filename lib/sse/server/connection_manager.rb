@@ -25,12 +25,12 @@ module Sse
       def unsubscribe(connection, channel)
         unless @channels[channel].nil?
           @channels[channel][:clients].delete(connection)
-
+          @logger.info("Unsubscribtion from Channel #{channel}. Total(#{@channels[channel][:clients].count})")
           if @channels[channel][:clients].count==0
             #stop and remove this RedisChannel
             @channels[channel][:redis].kill
-            # @channels[channel][:redis].terminate
-            @logger.info("Unsubscribtion from Channel #{channel}. Total(#{@channels[channel][:clients].count})")
+            @channels.delete(channel)
+            @logger.info("Redis Channel Killed(#{channel}).")
           end
         end
       end
