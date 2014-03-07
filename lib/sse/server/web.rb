@@ -34,11 +34,11 @@ module Sse
               members=redis.zrangebyscore(channel,last_event_id,'+inf')
               Sse::Server.configuration.logger.info("Send Old events(count: #{members.count}).")
               members.each do |m|
-                connection << message_to_sse(m)
+                connection << Sse::Server.message_to_sse(m)
               end
             else# client is outdated
               Sse::Server.configuration.logger.info("Client Outdated from #{last_event_id}.")
-              connection << pack_as_sse(nil, 'control', {type: "error", error: "outdated"})
+              connection << Sse::Server.pack_as_sse(nil, 'control', {type: "error", error: "outdated"})
               connection.close
             end
           end
