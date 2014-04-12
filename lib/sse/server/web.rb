@@ -29,7 +29,7 @@ module Sse
           begin
             if last_event_id
               #check redis
-              redis= Redis.connect
+              redis= Redis.connect(url: Sse::Server.configuration.redis_uri)
               members=redis.zrangebyscore(channel,last_event_id,last_event_id)
               if members.count > 0
                 members=redis.zrangebyscore(channel,last_event_id,'+inf')

@@ -41,7 +41,7 @@ module Sse
 
       def start
         @thread=Thread.new{
-          @redis=Redis.new
+          @redis=Redis.new(url: Sse::Server.configuration.redis_uri)
           @manager.logger.warn("New RedisChannel Started Listening On #{@channel}.")
           begin
             @redis.subscribe(@channel) do |on|

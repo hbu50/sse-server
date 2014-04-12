@@ -14,7 +14,8 @@ module Sse
         :logger,
         :connection_manager,
         :namespace,
-        :authorize_lambda
+        :authorize_lambda,
+        :redis_uri
 
       def initialize
         @authorize_lambda=lambda{|request, channel|
