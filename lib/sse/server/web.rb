@@ -42,6 +42,7 @@ module Sse
                 connection << Sse::Server.pack_as_sse(nil, 'control', {type: "error", error: "outdated"})
                 connection.close
               end
+              redis.close
             end
             EventMachine::PeriodicTimer.new(25) { connection << ":\n" } # required, otherwise the connection is closed in 30-60 sec
             
