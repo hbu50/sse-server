@@ -7,8 +7,7 @@ module Sse
       def ignore_exception
         begin
           yield
-        rescue Exception => e
-          puts "HERE\n"
+        rescue => e
           Sse::Server.configuration.logger.error "Ignored Exception: #{e.message}"
         end
       end
