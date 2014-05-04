@@ -75,6 +75,7 @@ module Sse
       end
       
       def kill
+        @redis.client.disconnect
         @thread.kill if @thread
       end
     end

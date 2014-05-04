@@ -1,3 +1,4 @@
+require "sse/redis/subscribe"
 require "sse/server/version"
 require "sse/server/connection_manager"
 require "sse/server/web"
