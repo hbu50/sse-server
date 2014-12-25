@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Sse::Server::VERSION
   spec.authors       = ["Hossein Bukhamseen"]
   spec.email         = ["bukhamseen.h@gmail.com"]
-  spec.description   = %q{An redis backed server sent event server}
+  spec.description   = %q{A redis backed server sent event server}
   spec.summary       = %q{such gem}
   spec.homepage      = ""
   spec.license       = "MIT"
@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "redis"
   spec.add_dependency "sinatra"
+  spec.add_dependency "connection_pool"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"

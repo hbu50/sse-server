@@ -46,6 +46,10 @@ module Sse
             @redis.subscribe(@channel) do |on|
               on.subscribe do |channel, subscriptions|
                 @manager.logger.warn("Redis Subscribed #{@channel}")
+                # publish the updates to interested parties
+                Sse::Server.configuration.redis_pool.with do |redis|
+                  redis.publish('hs-sse:.internal/pubsub', @channel)
+                end
               end
 
               on.message do |channel, message|
@@ -69,6 +73,8 @@ module Sse
           rescue JSON::ParserError => error
             # how to say just ignore and continue
             @manager.logger.error("Error Parsing JSON.")
+          ensure
+
           end
         }
       end
@@ -76,6 +82,10 @@ module Sse
       def kill
         @redis.client.disconnect
         @thread.kill if @thread
+        # publish the updates to interested parties
+        Sse::Server.configuration.redis_pool.with do |redis|
+          redis.publish('hs-sse:.internal/pubsub', @channel)
+        end
       end
     end
   end
