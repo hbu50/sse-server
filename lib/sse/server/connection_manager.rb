@@ -1,4 +1,5 @@
 require 'sse/server/redis_channel'
+require 'sse/server/configuration'
 
 module Sse
   module Server
@@ -12,17 +13,19 @@ module Sse
         @logger.debug("Initialized ConnectionManager")
       end
 
-      def subscribe(connection, channel)
+      def subscribe(connection, channel, request)
         if @channels[channel].nil?
           @channels[channel]={redis: nil, clients: []}
           @channels[channel][:redis]=RedisChannel.new(channel,self)
           @channels[channel][:redis].start
         end
+        Sse::Server.configuration.subscribe_lambda.call(request)
+        
         @channels[channel][:clients] << connection
         @logger.info("Subscribtion To Channel #{channel}. Total(#{@channels[channel][:clients].count})")
       end
 
-      def unsubscribe(connection, channel)
+      def unsubscribe(connection, channel,request)
         unless @channels[channel].nil?
           @channels[channel][:clients].delete(connection)
           @logger.info("Unsubscribtion from Channel #{channel}. Total(#{@channels[channel][:clients].count})")
@@ -32,6 +35,7 @@ module Sse
             @channels.delete(channel)
             @logger.info("Redis Channel Killed(#{channel}).")
           end
+          Sse::Server.configuration.unsubscribe_lambda.call(request)
         end
       end
 

@@ -46,10 +46,10 @@ module Sse
             end
             EventMachine::PeriodicTimer.new(25) { connection << ":\n" } # required, otherwise the connection is closed in 30-60 sec
             
-            Sse::Server.configuration.connection_manager.subscribe(connection,channel)
+            Sse::Server.configuration.connection_manager.subscribe(connection,channel,request)
             connection.callback {
               Sse::Server.configuration.logger.error("event-stream client disconnected. Channel: #{nnel}")
-              Sse::Server.configuration.connection_manager.unsubscribe(connection,channel)
+              Sse::Server.configuration.connection_manager.unsubscribe(connection,channel,request)
             }
           rescue ::Exception => e
             Sse::Server.configuration.logger.fatal("Exception in stream: ")

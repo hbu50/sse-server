@@ -17,11 +17,19 @@ module Sse
         :connection_manager,
         :namespace,
         :authorize_lambda,
+        :subscribe_lambda,
+        :unsubscribe_lambda,
         :redis_uri,
         :redis_connection_pool
 
       def initialize
         @authorize_lambda=lambda{|request, channel|
+          return true
+        }
+        @subscribe_lambda=lambda{|request|
+          return true
+        }
+        @unsubscribe_lambda=lambda{|request|
           return true
         }
       end
