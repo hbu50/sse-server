@@ -67,13 +67,14 @@ module Sse
                 end
               end
             end
-            EventMachine::PeriodicTimer.new(25) {
-             connection << ":\n"
-             Sse::Server.configuration.connection_manager.save_payload(channel,payload)
-            } # required, otherwise the connection is closed in 30-60 sec
-            
+            timer = EventMachine::PeriodicTimer.new(25) do
+              connection << ":\n"
+              Sse::Server.configuration.connection_manager.save_payload(channel,payload)
+              # required, otherwise the connection is closed in 30-60 sec
+            end
             Sse::Server.configuration.connection_manager.subscribe(connection,channel,request,payload)
             connection.callback {
+              timer.cancel
               Sse::Server.configuration.logger.error("event-stream client disconnected. Channel: #{nnel}")
               Sse::Server.configuration.connection_manager.unsubscribe(connection,channel,request,payload)
             }
