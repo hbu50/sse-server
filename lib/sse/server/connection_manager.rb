@@ -60,6 +60,13 @@ module Sse
         end
         return []
       end
+
+      def stats
+        {
+          total_channels: @channels.count,
+          total_clients: @channels.values.inject(0){ |sum, channel| sum + channel[:clients].count },
+        }
+      end
     end
   end
 end

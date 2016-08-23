@@ -1,14 +1,22 @@
 require 'sinatra/base'
 require 'redis'
 require 'securerandom'
+require 'json'
+require 'sse/server/web_helper'
+
 module Sse
   module Server
 
     class Web < ::Sinatra::Base
 
-      get 'status', provides: 'application/json' do
+      get '/status', provides: 'application/json' do
+        {
+          sse: Sse::Server.configuration.connection_manager.stats,
+          redis: Sse::Server::WebHelper.redis_info
 
+        }.to_json
       end
+
       get '/info/subscribers', provides: 'application/json' do
         nnel=params[:channel]
 
