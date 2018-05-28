@@ -39,7 +39,7 @@ module Sse
       def redis_pool
         return @redis_connection_pool if @redis_connection_pool
         return @redis_connection_pool = ConnectionPool.new(size: 10, timeout: 5) {
-          Redis.connect(url: @redis_uri, reconnect_attempts: 100)
+          Redis.new(url: @redis_uri, reconnect_attempts: 100)
         }
       end
     end

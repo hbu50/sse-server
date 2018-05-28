@@ -1,25 +1,27 @@
 PATH
   remote: .
   specs:
-    sse-server (0.2.0)
+    sse-server (0.4.0)
       connection_pool
-      redis
+      redis (~> 4.0)
       sinatra
 
 GEM
   remote: https://rubygems.org/
   specs:
-    connection_pool (2.1.0)
-    rack (1.6.0)
-    rack-protection (1.5.3)
+    connection_pool (2.2.2)
+    mustermann (1.0.2)
+    rack (2.0.5)
+    rack-protection (2.0.1)
       rack
     rake (10.1.1)
-    redis (3.2.0)
-    sinatra (1.4.5)
-      rack (~> 1.4)
-      rack-protection (~> 1.4)
-      tilt (~> 1.3, >= 1.3.4)
-    tilt (1.4.1)
+    redis (4.0.1)
+    sinatra (2.0.1)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.1)
+      tilt (~> 2.0)
+    tilt (2.0.8)
 
 PLATFORMS
   ruby
@@ -28,3 +30,6 @@ DEPENDENCIES
   bundler (~> 1.3)
   rake
   sse-server!
+
+BUNDLED WITH
+   1.15.4
