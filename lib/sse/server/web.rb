@@ -23,17 +23,17 @@ module Sse
         authorize=Sse::Server.configuration.authorize_lambda.call(request,nnel)
         unless authorize
            halt 401, 'unauthorized :-x'
-        end 
+        end
         channel=Sse::Server.configuration.namespace+":"+nnel
-        
+
         subscribers={}
         Sse::Server.configuration.redis_pool.with do |redis|
           subscribers=redis.hgetall(channel+'-subscribers')
         end
-        
+
         subscribers=subscribers.values.map{|s| JSON.parse(s)}
-        subscribers.reject!{|payload| Time.now.to_i - payload['_timestamp'] > 40} 
-        
+        subscribers.reject!{|payload| Time.now.to_i - payload['_timestamp'] > 40}
+
         headers 'Access-Control-Allow-Origin'=> '*'
         headers 'Access-Control-Request-Method'=> 'GET'
 
@@ -46,7 +46,7 @@ module Sse
         payload=Sse::Server.configuration.authorize_lambda.call(request,nnel)
         unless payload
            halt 401, 'unauthorized :-x'
-        end 
+        end
         payload[:uid]=SecureRandom.uuid
 
         channel=Sse::Server.configuration.namespace+":"+nnel
@@ -86,7 +86,7 @@ module Sse
               Sse::Server.configuration.logger.error("event-stream client disconnected. Channel: #{nnel}")
               Sse::Server.configuration.connection_manager.unsubscribe(connection,channel,request,payload)
             }
-          rescue ::Exception => e
+          rescue => e
             Sse::Server.configuration.logger.fatal("Exception in stream: ")
             Sse::Server.configuration.logger.fatal(e.backtrace)
             connection.close
