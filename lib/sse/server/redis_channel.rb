@@ -31,7 +31,7 @@ module Sse
         :channel,
         :manager,
         :thread
-      
+
       def initialize(channel,manager)
         @channel=channel
         @manager=manager
@@ -78,9 +78,9 @@ module Sse
           end
         }
       end
-      
+
       def kill
-        @redis.client.disconnect
+        @redis.disconnect!
         @thread.kill if @thread
         # publish the updates to interested parties
         Sse::Server.configuration.redis_pool.with do |redis|
